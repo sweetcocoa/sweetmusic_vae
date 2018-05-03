@@ -4,6 +4,7 @@ import IPython.display
 from sweetmusic_vae.midi_utils.reverse_pianoroll import *
 
 
+
 def show_midi(pm, roll=False):
     """
     Piano roll 이나 PrettyMidi 인스턴스를 jupyter notebook상의 셀에서 재생 가능한 형태로 보여줍니다.
@@ -37,6 +38,30 @@ def is_single_track(pm):
         return False
     else:
         return True
+
+
+def get_sliding_windows(pm_, WINDOW_LENGTH=16, WINDOW_STRIDE=16):
+    """
+    piano roll이나 PrettyMidi 인스턴스를 정해진 윈도우 길이로 슬라이딩하며 분할합니다.
+    Magenta VAE 논문에서는 window length : 2 bar, srtide 1 bar 로 sequence를 분할했습니다.
+
+    :return:
+        list[PrettyMidi, PrettyMidi ... PrettyMidi]
+    """
+    if isinstance(pm, pretty_midi.PrettyMIDI):
+        pm = pm_.get_piano_roll()
+    else:
+        pm = pm_
+
+    windows = []
+    len_pm = len(pm[0])
+    for i in range(0, len_pm, WINDOW_STRIDE):
+        if len_pm - i < WINDOW_LENGTH:
+            break
+        pm_piece = piano_roll_to_pretty_midi(pm[:, i:i+WINDOW_LENGTH])
+        windows.append(pm_piece)
+    
+    return windows
 
 
 def is_piano_track(pm):

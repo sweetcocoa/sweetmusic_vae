@@ -1,14 +1,14 @@
 import pretty_midi
-from sweetmusic_vae.midi_utils.reverse_pianoroll import *
+# from sweetmusic_vae.midi_utils.reverse_pianoroll import *
+from reverse_pianoroll import *
 import random
 import numpy as np
 
-LEN_MIDI_ROLL = 1500
-
+LEN_MIDI_ROLL = 16
+LEN_BAR = 16
 
 def get_piano_roll(pm):
     return pm.get_piano_roll()
-
 
 def random_crop_midi(pm_roll):
     """
@@ -23,13 +23,12 @@ def random_crop_midi(pm_roll):
         pm_new = np.concatenate((pm_roll, pm_roll), axis=1)
         return random_crop_midi(pm_new)
     else:
-        From = random.randint(0, length - LEN_MIDI_ROLL)
+        From = (random.randint(0, length - LEN_MIDI_ROLL) // LEN_BAR) * LEN_BAR
         To = From + LEN_MIDI_ROLL
         pm_new = pm_roll[:, From:To]
         return pm_new
     pass
 
 if __name__ == "__main__":
-    # print(random.randint(0, 1))
-    a = np.zeros((10,99))
+    a = np.zeros((10,15))
     print(random_crop_midi(a).shape)
