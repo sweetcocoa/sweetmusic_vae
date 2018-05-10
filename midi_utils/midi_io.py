@@ -1,8 +1,7 @@
 import pretty_midi
 import librosa
 import IPython.display
-from sweetmusic_vae.midi_utils.reverse_pianoroll import *
-
+from reverse_pianoroll import piano_roll_to_pretty_midi
 
 
 def show_midi(pm, roll=False):
@@ -48,7 +47,9 @@ def get_sliding_windows(pm_, WINDOW_LENGTH=16, WINDOW_STRIDE=16):
     :return:
         list[PrettyMidi, PrettyMidi ... PrettyMidi]
     """
-    if isinstance(pm, pretty_midi.PrettyMIDI):
+    pm = None
+
+    if isinstance(pm_ , pretty_midi.PrettyMIDI):
         pm = pm_.get_piano_roll()
     else:
         pm = pm_
@@ -62,6 +63,21 @@ def get_sliding_windows(pm_, WINDOW_LENGTH=16, WINDOW_STRIDE=16):
         windows.append(pm_piece)
     
     return windows
+
+
+def check_tempo(pm, numerator=4, denominator=4):
+    """
+        4/4 박자 midi인지 확인합니다.
+        
+    """
+    if len(pm.time_signature_changes) != 1:
+        return False
+    nume = pm.time_signature_changes[0].numerator
+    denom = pm.time_signature_changes[0].denominator
+    if nume == numerator and denom == denominator:
+        return True
+    else:
+        return False
 
 
 def is_piano_track(pm):
@@ -88,3 +104,6 @@ def is_piano_track(pm):
         return True
 
 
+def is_available_track(pm):
+    ret = is_piano_track(pm) and check_tempo(pm) and is_single_track(pm)
+    return ret

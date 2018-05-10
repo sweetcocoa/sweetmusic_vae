@@ -1,6 +1,5 @@
 import pretty_midi
 # from sweetmusic_vae.midi_utils.reverse_pianoroll import *
-from reverse_pianoroll import *
 import random
 import numpy as np
 
